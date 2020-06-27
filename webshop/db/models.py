@@ -1,7 +1,5 @@
 import mongoengine as me
 import datetime
-from PIL import Image
-import matplotlib.image
 import requests
 
 me.connect('webshop')
