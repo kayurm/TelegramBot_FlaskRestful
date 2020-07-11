@@ -1,2 +1,6 @@
 category_lookup = 'category'
-separator = '_'
+add_basket_lookup = 'add_basket'
+clear_basket_lookup = 'clear_basket'
+checkout = 'checkout'
+
+separator = '-'

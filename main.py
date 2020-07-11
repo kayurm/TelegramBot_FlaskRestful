@@ -1,26 +1,16 @@
-from webshop.bot.main import start_bot, bot
-from flask import Flask, request, abort
-from telebot.types import Update
-from webshop.bot import config
-from environment import PRODUCTION
+from webshop.bot.main import bot, start_bot
 import time
-
-app = Flask(__name__)
-
-
-@app.route(config.WEBHOOK_PATH, methods=['POST'])
-def webhook():
-    if request.headers.get('content-type') == 'application/json':
-        json_string = request.get_data().decode('utf-8')
-        update = Update.de_json(json_string)
-        bot.process_new_updates([update])
-        return ''
-    else:
-        abort(403)
+from webshop.bot import config
+from webshop.api.environment import PRODUCTION
+from threading import Thread
+from webshop.bot.main import telebot_bp
+from webshop.api.main import api_bp, app, start_api
 
 
 if __name__ == '__main__':
     if PRODUCTION:
+        app.register_blueprint(api_bp)
+        app.register_blueprint(telebot_bp)
         bot.remove_webhook()
         time.sleep(1)
         bot.set_webhook(
@@ -29,4 +19,10 @@ if __name__ == '__main__':
         )
         app.run()
     else:
-        start_bot()
+        bot.remove_webhook()
+        time.sleep(1)
+        start_api()
+        t1 = Thread(target=start_bot, name="bot thread")
+        t1.start()
+
+
